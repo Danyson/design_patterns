@@ -29,10 +29,10 @@ class BikeTyreFactory(TyreFactory):
         return self.bikeTyre.size()
 
 class TyreProducer:
-    def get_tyre_factory(self, typeOfTyre):
-        if ( typeOfTyre == 'car' ):
+    def get_tyre_factory(self, typeOfVehicle):
+        if ( typeOfVehicle == 'car' ):
             return CarTyreFactory()
-        elif (typeOfTyre == 'bike' ):
+        elif (typeOfVehicle == 'bike' ):
             return BikeTyreFactory()
 
 tyre = TyreProducer()
