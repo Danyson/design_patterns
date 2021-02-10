@@ -28,8 +28,16 @@ class BikeTyreFactory(TyreFactory):
         self.bikeTyre = BikeTyre()
         return self.bikeTyre.size()
 
-car = CarTyreFactory()
-bike = BikeTyreFactory()
+class TyreProducer:
+    def get_tyre_factory(self, typeOfTyre):
+        if ( typeOfTyre == 'car' ):
+            return CarTyreFactory()
+        elif (typeOfTyre == 'bike' ):
+            return BikeTyreFactory()
 
-print(f'car tyre size is {car.get_tyre_size()}')
-print(f'bike tyre size is {bike.get_tyre_size()}')
+tyre = TyreProducer()
+carTyre = tyre.get_tyre_factory('car')
+bikeTyre = tyre.get_tyre_factory('bike')
+
+print(f'car tyre size is {carTyre.get_tyre_size()}')
+print(f'bike tyre size is {bikeTyre.get_tyre_size()}')
