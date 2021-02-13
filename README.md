@@ -1,2 +1,2 @@
 # design_patterns
-Design Patterns implemented in Go-Lang
+Design Patterns implemented in Python
