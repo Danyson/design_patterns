@@ -32,5 +32,5 @@ class MileageCalculatorFactory():
             return bike.mileage()
 
 mileage = MileageCalculatorFactory()
-print(f'{mileage.mileage_calculator("car", 5)}KMs')
-print(f'{mileage.mileage_calculator("bike", 5)}KMs')
+print(f'{mileage.mileage_calculator( vehicleType = "car", fuelInLitre = 5)}KMs')
+print(f'{mileage.mileage_calculator( vehicleType = "bike", fuelInLitre = 5)}KMs')
