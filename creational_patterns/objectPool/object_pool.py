@@ -1,55 +1,141 @@
-class BattleRoyale: # singleton class
-   __instance__ = None
+from abc import ABC, abstractmethod
 
-   def __init__(self):
-       if BattleRoyale.__instance__ is None:
-           BattleRoyale.__instance__ = self
-       else:
-           raise Exception( 'cant create new Battle Royale instance' )
+''' abstract game class '''
+class Game(ABC):
+    @abstractmethod
+    def get_name(self): # name getter method
+        pass
 
-   @staticmethod
-   def get_instance(): # returns the instance of current class
-       if not BattleRoyale.__instance__:
-           BattleRoyale()
-       return BattleRoyale.__instance__
+''' abstract instance holder class '''
+class InstanceHolder(ABC):
+    @abstractmethod
+    def get_instance(self): # instance getter method
+        pass
 
-class BattleRoyaleObjectPool: # object pool class
+''' abstract object pool class '''
+class ObjectPool(ABC):
+    @abstractmethod
+    def acquire(self): # acquires an object from pool
+        pass
+    @abstractmethod
+    def release(self, player): # releases an object back to pool
+        pass
 
-    def __init__(self, size):
-        self.battleRoyaleObjectPool = [BattleRoyale.get_instance() for _ in range(size)]
+
+class Player:
+    def __init__(self, id, name):
+        self.__id = id
+        self.__name = name
+        self.__teamId = None
+        self.__gameName = None
+        ''' game room is not kept private, so that we can acquire and
+            release instance '''
+        self.gameRoom = None
+    def setter(self, teamId, game):
+        if(teamId!=None):
+            self.__teamId = teamId
+            self.__gameName = game.get_name()
+            self.gameRoom = game
+        else:
+            self.__teamId = teamId
+            self.__gameName = None
+            self.gameRoom = None
+    def getter(self, choice):
+        if(choice == 'id'):
+            return self.__id
+        if(choice == 'name'):
+            return self.__name
+        if(choice == 'teamId'):
+            return self.__teamId
+        if(choice == 'gameName'):
+            return self.__gameName
+        if(choice == 'gameRoom'):
+            return self.gameRoom
+
+    def __repr__(self):
+        return str({'id' : self.__id,
+                    'name' : self.__name,
+                    'game name' : self.__gameName,
+                    'team id' : self.__teamId,
+                    'game room' : self.gameRoom })
+
+class BattleRoyale(Game):
+    def __init__(self, gameName):
+        self.__gameName = gameName
+    def get_name(self):
+        return self.__gameName
+
+class GameInstanceHolder(InstanceHolder):
+    def __init__(self, gameInstance):
+        self.__instance = gameInstance
+    def get_instance(self):
+        return self.__instance
+
+class BattleRoyaleObjectPool(ObjectPool): # object pool class
+
+    def __init__(self, size, game):
+        self.battleRoyaleObjectPool = [game.get_instance() for _ in range(size)]
 
     def acquire(self):
         if self.battleRoyaleObjectPool:
             return self.battleRoyaleObjectPool.pop()
         else:
-            self.battleRoyaleObjectPool.append(BattleRoyale.get_instance())
+            self.battleRoyaleObjectPool.append(game.get_instance())
             return self.battleRoyaleObjectPool.pop()
 
     def release(self, player):
-        player.setting = 0 # instance setting property
-        self.battleRoyaleObjectPool.append(player)
-
-class Player:
-    gameRoom = None
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-    def __repr__(self):
-        return str({'id' : self.id,
-                    'name' : self.name,
-                    'game room' : self.gameRoom })
+        self.battleRoyaleObjectPool.append(player.getter(choice='gameRoom'))
+        player.setter( teamId = None, game = player )
 
 
-'''get 100 instance of single Battle Royale game in our BattleRoyaleObjectPool'''
+
+
+''' create new battle royale game '''
+battleRoyalegameOne = GameInstanceHolder(BattleRoyale(gameName = 'game one'))
 playerLimit = 100
-battleRoyaleObjectPool = BattleRoyaleObjectPool(playerLimit)
-for battleRoyaleInstance in battleRoyaleObjectPool.battleRoyaleObjectPool:
-    print(battleRoyaleInstance)
-''' give one of the 100 single Battle Royale game instance to playerOne '''
+
+'''get 100 instance of battleRoyalegameOne in our
+   BattleRoyaleObjectPool'''
+battleRoyaleObjectPoolOne = BattleRoyaleObjectPool(playerLimit,
+                                                   battleRoyalegameOne)
+
+''' create playerOne & give one of the 100 battleRoyalegameOne
+    instance to playerOne'''
 playerOne = Player(id = 1, name = 'playerOne')
-playerOne.gameRoom = battleRoyaleObjectPool.acquire()
+playerOne.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
 print(playerOne)
-''' when the player exits the game, release the instance back to game room
+''' create playerTwo &  give one of the 100 battleRoyalegameOne
+    instance to playerTwo '''
+playerTwo = Player(id = 2, name = 'playerTwo')
+playerTwo.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
+print(playerTwo)
+
+''' checking if playerOne game instance and
+    object pool instances of battleRoyalegameOne are same '''
+assert(playerOne.gameRoom == gameInstance
+       for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
+count = 0
+for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
+    count = count+1
+print(count)
+''' when the playerOne exits the game, release the instance back to game room
  (object pool) '''
-battleRoyaleObjectPool.release(playerOne.gameRoom)
+battleRoyaleObjectPoolOne.release(playerOne)
+count = 0
+for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
+    count = count+1
+print(count)
+''' checking if playerTwo game instance and
+    object pool instances of battleRoyalegameOne are same '''
+assert(playerTwo.gameRoom == gameInstance
+       for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
+
+''' when the playerTwo exits the game, release the instance back to game room
+ (object pool) '''
+battleRoyaleObjectPoolOne.release(playerTwo)
+print(playerOne)
+print(playerTwo)
+count = 0
+for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
+    count = count+1
+print(count)
