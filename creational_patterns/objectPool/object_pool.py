@@ -87,6 +87,12 @@ class BattleRoyaleObjectPool(ObjectPool): # object pool class
         self.battleRoyaleObjectPool.append(player.getter(choice='gameRoom'))
         player.setter( teamId = None, game = player )
 
+def test_no_of_instance(battleRoyaleObjectPool):
+    count = 0
+    for gameInstance in battleRoyaleObjectPool.battleRoyaleObjectPool:
+        count = count+1
+    return count
+
 
 
 
@@ -101,41 +107,41 @@ battleRoyaleObjectPoolOne = BattleRoyaleObjectPool(playerLimit,
 
 ''' create playerOne & give one of the 100 battleRoyalegameOne
     instance to playerOne'''
+print(f'''when object pool is created there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print()
 playerOne = Player(id = 1, name = 'playerOne')
 playerOne.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
 print(playerOne)
+print()
+''' checking if playerOne game instance and
+    object pool instances of battleRoyalegameOne are same '''
+assert(playerOne.gameRoom == gameInstance
+       for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
+print(f'''when one object from object pool is given to player one there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print()
 ''' create playerTwo &  give one of the 100 battleRoyalegameOne
     instance to playerTwo '''
 playerTwo = Player(id = 2, name = 'playerTwo')
 playerTwo.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
 print(playerTwo)
-
-''' checking if playerOne game instance and
-    object pool instances of battleRoyalegameOne are same '''
-assert(playerOne.gameRoom == gameInstance
-       for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
-count = 0
-for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
-    count = count+1
-print(count)
+print()
+print(f'''when another one object from object pool is given to player two there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances ''')
+print()
 ''' when the playerOne exits the game, release the instance back to game room
  (object pool) '''
 battleRoyaleObjectPoolOne.release(playerOne)
-count = 0
-for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
-    count = count+1
-print(count)
+
 ''' checking if playerTwo game instance and
     object pool instances of battleRoyalegameOne are same '''
 assert(playerTwo.gameRoom == gameInstance
        for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
-
+print(f'''when one object is released from player one to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print()
 ''' when the playerTwo exits the game, release the instance back to game room
  (object pool) '''
 battleRoyaleObjectPoolOne.release(playerTwo)
+print(f'''when another one object released from player two to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print()
 print(playerOne)
+print()
 print(playerTwo)
-count = 0
-for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool:
-    count = count+1
-print(count)
