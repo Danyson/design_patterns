@@ -28,18 +28,16 @@ class Player:
         self.__name = name
         self.__teamId = None
         self.__gameName = None
-        ''' game room is not kept private, so that we can acquire and
-            release instance '''
-        self.gameRoom = None
+        self.__gameRoom = None
     def setter(self, teamId, game):
         if(teamId!=None):
             self.__teamId = teamId
             self.__gameName = game.get_name()
-            self.gameRoom = game
+            self.__gameRoom = game
         else:
             self.__teamId = teamId
             self.__gameName = None
-            self.gameRoom = None
+            self.__gameRoom = None
     def getter(self, choice):
         if(choice == 'id'):
             return self.__id
@@ -50,14 +48,14 @@ class Player:
         if(choice == 'gameName'):
             return self.__gameName
         if(choice == 'gameRoom'):
-            return self.gameRoom
+            return self.__gameRoom
 
     def __repr__(self):
         return str({'id' : self.__id,
                     'name' : self.__name,
                     'game name' : self.__gameName,
                     'team id' : self.__teamId,
-                    'game room' : self.gameRoom })
+                    'game room' : self.__gameRoom })
 
 class BattleRoyale(Game):
     def __init__(self, gameName):
@@ -107,7 +105,7 @@ battleRoyaleObjectPoolOne = BattleRoyaleObjectPool(playerLimit,
 
 ''' create playerOne & give one of the 100 battleRoyalegameOne
     instance to playerOne'''
-print(f'''when object pool is created there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print(f'''when object pool is created there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances of battle Royale game One''')
 print()
 playerOne = Player(id = 1, name = 'playerOne')
 playerOne.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
@@ -117,7 +115,7 @@ print()
     object pool instances of battleRoyalegameOne are same '''
 assert(playerOne.gameRoom == gameInstance
        for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
-print(f'''when one object from object pool is given to player one there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print(f'''when one object from object pool is given to player one there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances of battle Royale game One''')
 print()
 ''' create playerTwo &  give one of the 100 battleRoyalegameOne
     instance to playerTwo '''
@@ -125,7 +123,7 @@ playerTwo = Player(id = 2, name = 'playerTwo')
 playerTwo.setter(teamId = 1, game = battleRoyaleObjectPoolOne.acquire())
 print(playerTwo)
 print()
-print(f'''when another one object from object pool is given to player two there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances ''')
+print(f'''when another one object from object pool is given to player two there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances of battle Royale game One ''')
 print()
 ''' when the playerOne exits the game, release the instance back to game room
  (object pool) '''
@@ -135,12 +133,12 @@ battleRoyaleObjectPoolOne.release(playerOne)
     object pool instances of battleRoyalegameOne are same '''
 assert(playerTwo.gameRoom == gameInstance
        for gameInstance in battleRoyaleObjectPoolOne.battleRoyaleObjectPool)
-print(f'''when one object is released from player one to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print(f'''when one object is released from player one to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances of battle Royale game One''')
 print()
 ''' when the playerTwo exits the game, release the instance back to game room
  (object pool) '''
 battleRoyaleObjectPoolOne.release(playerTwo)
-print(f'''when another one object released from player two to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances''')
+print(f'''when another one object released from player two to object pool there are {test_no_of_instance(battleRoyaleObjectPoolOne)} instances of battle Royale game One''')
 print()
 print(playerOne)
 print()
